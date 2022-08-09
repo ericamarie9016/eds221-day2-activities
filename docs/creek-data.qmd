@@ -1,0 +1,70 @@
+---
+title: "Mack Creek data"
+format: html
+editor: visual
+execute:
+  warning: FALSE
+  message: FALSE
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+Read in the data
+
+```{r}
+mack_verts <- read_csv(here("data", "AS00601.csv"))
+clean_names(mack_verts)
+```
+
+Access parts of the data frame
+
+```{r}
+mc_wt_5 <- mack_verts$WEIGHT[5]
+mc_wt_5
+
+mc_length_8_20 <- mack_verts$LENGTH1[seq(8,20)]
+mc_length_8_20
+
+mc_dates <- mack_verts$SAMPLEDATE
+mc_dates
+```
+
+Salamander subset
+
+```{r}
+mc_salamanders <- mack_verts %>%
+  filter(mack_verts$SPECIES == "DITE")
+
+```
+
+Scatterplot
+
+```{r}
+ggplot(data = mc_salamanders,
+       aes(x = LENGTH1, y = WEIGHT)) +
+  geom_point(size = 1, color = "purple") +
+  labs(x = "the length", y = "the weight", title = "The length by weight", subtitle = "I can add more words", caption = "Sourced from EDI Data Portal, Andrews Experimental Forest") +
+  theme_dark()
+
+ggsave(here("figs", "salamander_size.png"))
+```
+
+Trout subset
+
+```{r}
+mc_trout <- mack_verts %>%
+  filter(mack_verts$SPECIES == "ONCL")
+```
+
+```{r}
+ggplot(data = mc_trout,
+       aes(x = LENGTH1, y = WEIGHT)) +
+  geom_point(aes(color = REACH)) +
+  scale_color_manual(values = c("purple", "orange", "green")) + 
+  facet_wrap(~REACH) +
+  labs(x = "length", y = "the weight", title = "here we go again")
+```
